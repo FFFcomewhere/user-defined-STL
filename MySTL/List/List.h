@@ -20,7 +20,7 @@ public:
         prev = Prev;
         next = Next;
     }
-   
+ 
 };
 
 
@@ -40,7 +40,8 @@ public:
     List (const initializer_list<T>& other);
     List (List<T>& other);
     List (int n, T value);
-    void operator=(const List<T>& other);
+    void operator=(List<T>& other);
+
     
     bool empty () {return count==0;}
     size_t size () {return count;}
@@ -62,8 +63,9 @@ public:
 
     int distance(iterator Beg, iterator End);   //计算迭代器的距离
     bool advance(iterator& now, int Distance);
-    void free();
+    void clear();
     void show();
+    
 private:
     void init_List();
     void new_node(Node<T>* now, T data);  
@@ -103,6 +105,8 @@ void List<T>::free_node(Node<T>* now)
 
     return ;
 }
+
+
 
 template<typename T>
 List<T>::List()
@@ -154,12 +158,21 @@ List<T>::List(int n, T value)
 }
 
 template<typename T>
-void List<T>::operator=(const List<T>& other)
+void List<T>::operator=(List<T>& other)
 {
-    this(other);
+    init_List();
+
+    iterator i = other.begin();
+    while(i->next)
+    {
+        new_node(tail,i->data);
+        i = i->next;
+    }
+
 
     return ;
 }
+
 
 template<typename T>
 void List<T>::push_front(T data)
@@ -230,8 +243,10 @@ template<typename T>
 int List<T>::find(T elem)
 {
     auto i = begin();
+//    int k =0;
     while(i->next)
     {
+//        cout<<k++;
         if (i->data == elem)
             return distance(begin(), i);
         i = i->next;
@@ -240,10 +255,11 @@ int List<T>::find(T elem)
     return -1;
 }
 
+
 template<typename T>
-void List<T>::free()
+void List<T>::clear()
 {
-    auto i = head;
+    auto i = head->next;
     while(i != tail)
     {
         auto j = i;
@@ -251,7 +267,6 @@ void List<T>::free()
         free_node(j);
     }
 
-    init_List();
     return ;
 }
 
@@ -274,7 +289,7 @@ int List<T>::distance(iterator Beg, iterator End)
 {
     int dis = 0;
     auto i = Beg;
-    while(i->next)
+    while(i != End)
     {
         ++dis;
         i = i->next;
